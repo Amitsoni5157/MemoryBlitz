@@ -6,8 +6,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    private List<Card> selectedCards = new List<Card>();
+    public List<Card> selectedCards = new List<Card>();
     private bool isCheckingMatch; // Flag to prevent multiple coroutine instances
+    public ScoreManager scoreManager; // Reference to ScoreManager
 
     void Awake()
     {
@@ -40,10 +41,14 @@ public class GameManager : MonoBehaviour
         // Check for matches between adjacent pairs
         for (int i = 0; i < selectedCards.Count - 1; i += 2)
         {
-            if (selectedCards[i].cardImage == selectedCards[i + 1].cardImage)
+            if (selectedCards[i].cardImage.name == selectedCards[i + 1].cardImage.name)
             {
                 matchedCards.Add(selectedCards[i]);
                 matchedCards.Add(selectedCards[i + 1]);
+            }
+            else
+            {
+                StartCoroutine(FlipCardsBack());
             }
         }
 
@@ -54,6 +59,8 @@ public class GameManager : MonoBehaviour
                 matchedCard.Match();
                 selectedCards.Remove(matchedCard);
             }
+            scoreManager.UpdateScore(matchedCards.Count / 2); // Update score using ScoreManager
+
         }
         else
         {
@@ -72,4 +79,12 @@ public class GameManager : MonoBehaviour
         }
         selectedCards.Clear();
     }
+
+    // Method to reset score and pairs matched
+    public void ResetGame()
+    {
+        scoreManager.ResetScore(); // Reset score using ScoreManager
+
+    }
+
 }

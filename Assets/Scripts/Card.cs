@@ -25,12 +25,12 @@ public class Card : MonoBehaviour
 
     public void OnClick()
     {
-        Debug.Log(isFlipped + " : isMatched " + isMatched);
         if (!isFlipped && !isMatched) // Check if the card is not already flipped or matched
         {
-            m_FlipAnimation.Play("FlipAnim");
-            Invoke("GetFrontSprite", 0.2f);
-            //Flip();
+           /* m_FlipAnimation.Play("FlipAnim");
+            Invoke("GetFrontSprite", 0.2f);*/
+           // Flip();
+             GetComponent<Image>().sprite = cardImage; // Show front image
             GameManager.Instance.OnCardClicked(this);
         }
     }
@@ -43,16 +43,13 @@ public class Card : MonoBehaviour
 
     public void Flip()
     {
-
         m_FlipAnimation.Play("FlipAnim");
         if (isFlipped)
-        {
-            Debug.Log(cardImage + " : Flip cardImage");
+        {           
             GetComponent<Image>().sprite = cardImage; // Show front image
         }
         else
             ShowBack(); // Show back image
-        // Implement card flipping animation
     }
 
     public void Match()

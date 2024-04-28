@@ -36,4 +36,10 @@ public class UIManager : MonoBehaviour
     {
         ModePanel.SetActive(value);
     }
+
+    public void ResetGame()
+    {
+        GameManager.Instance.ResetGame(); // Call GameManager's reset method
+        ToogleModePanel(true); // Show mode panel
+    }
 }

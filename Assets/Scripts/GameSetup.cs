@@ -36,6 +36,7 @@ public class GameSetup : MonoBehaviour
         for (int i = 0; i < uniqueImages.Count; i++)
         {
             cards[i].SetImage(uniqueImages[i]);
+            cards[i].cardId = i;
         }
     }
 
