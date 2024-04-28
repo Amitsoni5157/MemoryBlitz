@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -14,6 +15,8 @@ public class UIManager : MonoBehaviour
         cardLayoutController.ChangeLayoutSize(new Vector2Int(2, 2));
         ToogleModePanel(false);
         gameSetup.SetupCards(/*4*/);
+        GameManager.Instance.CurrentGameMode = GameModes.TwoByTwo;
+        SaveAndLoad.Instance.DeleteGameSavedData();
     }
 
     // Method to change the mode to 2x3
@@ -22,6 +25,8 @@ public class UIManager : MonoBehaviour
         cardLayoutController.ChangeLayoutSize(new Vector2Int(2, 3));
         ToogleModePanel(false);
         gameSetup.SetupCards(/*4*/);
+        GameManager.Instance.CurrentGameMode = GameModes.TwoByThree;
+        SaveAndLoad.Instance.DeleteGameSavedData();
     }
 
     // Method to change the mode to 5x6
@@ -30,6 +35,8 @@ public class UIManager : MonoBehaviour
         cardLayoutController.ChangeLayoutSize(new Vector2Int(5, 6));
         ToogleModePanel(false);
         gameSetup.SetupCards(/*4*/);
+        GameManager.Instance.CurrentGameMode = GameModes.FiveBySix;
+        SaveAndLoad.Instance.DeleteGameSavedData();
     }
 
     private void ToogleModePanel(bool value)
@@ -39,7 +46,6 @@ public class UIManager : MonoBehaviour
 
     public void ResetGame()
     {
-        GameManager.Instance.ResetGame(); // Call GameManager's reset method
-        ToogleModePanel(true); // Show mode panel
+        SceneManager.LoadScene(0);
     }
 }

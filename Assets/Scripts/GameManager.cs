@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,9 +7,16 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public List<Card> selectedCards = new List<Card>();
-    private bool isCheckingMatch; // Flag to prevent multiple coroutine instances
-    public ScoreManager scoreManager; // Reference to ScoreManager
+    private List<Card> selectedCards = new List<Card>();
+   
+    public ScoreManager scoreManager;
+
+    private DateTime _lastMatchTime;
+
+    private float _comboSecondThreshold = 1;
+    private int _currentCombo = 0;
+
+    public GameModes CurrentGameMode = GameModes.TwoByTwo;
 
     void Awake()
     {
@@ -20,7 +28,7 @@ public class GameManager : MonoBehaviour
         if (!selectedCards.Contains(card))
         {
             selectedCards.Add(card);
-            if (selectedCards.Count >= 2)
+            if (selectedCards.Count == 2)
             {
                 StartCoroutine(CheckMatchAsync());
             }
@@ -29,62 +37,49 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator CheckMatchAsync()
     {
-        if (isCheckingMatch)
-            yield break;
-
-        isCheckingMatch = true;
-
-        yield return new WaitForSeconds(0.65f); // Adjust delay as needed
-
-        List<Card> matchedCards = new List<Card>();
-
-        // Check for matches between adjacent pairs
+        
         for (int i = 0; i < selectedCards.Count - 1; i += 2)
         {
             if (selectedCards[i].cardImage.name == selectedCards[i + 1].cardImage.name)
             {
-                matchedCards.Add(selectedCards[i]);
-                matchedCards.Add(selectedCards[i + 1]);
+                _currentCombo++;
+
+                if (_currentCombo > 1) 
+                {
+                    TimeSpan diff = DateTime.Now.Subtract(_lastMatchTime);
+                    Debug.Log(diff.Seconds);
+                    if (diff.Seconds > _comboSecondThreshold) _currentCombo = 1;
+                }
+                
+                selectedCards[i].Match();
+                selectedCards[i + 1].Match();
+                selectedCards.Clear();
+                scoreManager.UpdateScore(_currentCombo);
+                _lastMatchTime = DateTime.Now;
             }
             else
             {
+                _currentCombo = 0;//reset combo
                 StartCoroutine(FlipCardsBack());
             }
         }
-
-        if (matchedCards.Count > 0)
-        {
-            foreach (var matchedCard in matchedCards)
-            {
-                matchedCard.Match();
-                selectedCards.Remove(matchedCard);
-            }
-            scoreManager.UpdateScore(matchedCards.Count / 2); // Update score using ScoreManager
-
-        }
-        else
-        {
-            StartCoroutine(FlipCardsBack());
-        }
-
-        isCheckingMatch = false;
+        yield return null;
     }
 
     IEnumerator FlipCardsBack()
     {
-        yield return new WaitForSeconds(0.5f); // Adjust delay as needed
-        foreach (var card in selectedCards)
-        {
-            card.Flip();
-        }
+        Card onecard = selectedCards[0];
+        Card twocard = selectedCards[1];
         selectedCards.Clear();
+        yield return new WaitForSeconds(0.5f); 
+        onecard.Flip();
+        twocard.Flip();
     }
 
     // Method to reset score and pairs matched
     public void ResetGame()
     {
-        scoreManager.ResetScore(); // Reset score using ScoreManager
-
+        scoreManager.ResetScore();
     }
 
 }

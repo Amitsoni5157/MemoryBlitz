@@ -3,9 +3,15 @@ using System.Collections.Generic;
 
 public class GameSetup : MonoBehaviour
 {
-    public Sprite[] cardImages; // Array of card images
+    public Sprite[] cardImages;
 
-    public List<Sprite> uniqueImages;
+    private List<UniqueImageInfo> uniqueImages;
+
+    public Sprite GetImageById(int id) 
+    {
+        return cardImages[id];
+    }
+
     public void SetupCards()
     {
         Card[] cards = FindObjectsOfType<Card>();
@@ -13,35 +19,38 @@ public class GameSetup : MonoBehaviour
 
         int numberOfPairs = cards.Length / 2;
 
-        // Create a list to store the unique images for this set of cards
-        uniqueImages = new List<Sprite>();
+        
+        uniqueImages = new List<UniqueImageInfo>();
 
-        // Add pairs of unique images to the list
+        
         for (int i = 0; i < numberOfPairs; i++)
         {
-            // Generate a random index that's different from the previous one
+            
             int prevIndex = index;
             do
             {
                 index = Random.Range(0, cardImages.Length);
             } while (index == prevIndex);
 
-            // Add each image twice for matching pairs
-            uniqueImages.Add(cardImages[index]);
-            uniqueImages.Add(cardImages[index]);
+           
+            uniqueImages.Add(new UniqueImageInfo {sprite=cardImages[index], imageId = index });
+            uniqueImages.Add(new UniqueImageInfo { sprite = cardImages[index], imageId = index });
 
         }
         ShuffleList(uniqueImages);
 
         for (int i = 0; i < uniqueImages.Count; i++)
         {
-            cards[i].SetImage(uniqueImages[i]);
+            cards[i].SetImage(uniqueImages[i].sprite);
             cards[i].cardId = i;
+            cards[i].cardImageId = uniqueImages[i].imageId;
         }
     }
 
 
-    // Shuffle the elements of a list
+
+
+    
     void ShuffleList<T>(List<T> list)
     {
         for (int i = list.Count - 1; i > 0; i--)
@@ -53,3 +62,11 @@ public class GameSetup : MonoBehaviour
         }
     }
 }
+
+
+public class UniqueImageInfo 
+{
+    public Sprite sprite;
+    public int imageId;
+}
+

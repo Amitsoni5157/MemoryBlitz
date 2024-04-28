@@ -1,16 +1,17 @@
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Card : MonoBehaviour
 {
     public int cardId;
-    public Sprite cardImage; // Image for this card
-    public Sprite cardBackImage;  // Image for the back face of the card
+    public Sprite cardImage;
+    public Sprite cardBackImage; 
+    public int cardImageId;
 
     public bool isFlipped = false;
-    public bool isMatched = false; // New field to track whether the card is matched
+    public bool isMatched = false; 
     private Animator m_FlipAnimation;
-
 
     private void Start()
     {
@@ -27,10 +28,8 @@ public class Card : MonoBehaviour
     {
         if (!isFlipped && !isMatched) // Check if the card is not already flipped or matched
         {
-           /* m_FlipAnimation.Play("FlipAnim");
-            Invoke("GetFrontSprite", 0.2f);*/
-           // Flip();
-             GetComponent<Image>().sprite = cardImage; // Show front image
+            Invoke("GetFrontSprite", 0.2f);
+            Flip();
             GameManager.Instance.OnCardClicked(this);
         }
     }
@@ -52,15 +51,24 @@ public class Card : MonoBehaviour
             ShowBack(); // Show back image
     }
 
-    public void Match()
+    public async void Match()
     {
         //  Debug.Log("Match The Card");
-        this.gameObject.SetActive(false);
         isMatched = true; // Mark the card as matched
+        await Task.Delay(500);
+        this.gameObject.SetActive(false);
+        
     }
     private void ShowBack()
     {
         m_FlipAnimation.Play("FlipAnim");
         GetComponent<Image>().sprite = cardBackImage; // Show back image
     }
+
+    public void HideCard()
+    {
+        this.gameObject.SetActive(false);
+    }
+
+
 }
